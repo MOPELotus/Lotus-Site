@@ -1,33 +1,37 @@
-name: Build Lotus Site
+name: Build and publish Lotus Site
 
 on:
   push:
     branches:
       - main
+
   schedule:
-    - cron: '17 */6 * * *'
+    - cron: '17 * * * *'
+      timezone: Asia/Singapore
+
   workflow_dispatch:
+
   repository_dispatch:
     types:
       - source-docs-updated
 
 concurrency:
-  group: lotus-site-build
+  group: lotus-site-publish
   cancel-in-progress: true
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
-  build:
+  build-and-publish:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout site
-        uses: actions/checkout@v4
+      - name: Checkout site source
+        uses: actions/checkout@v6
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: 24
           cache: npm
@@ -41,15 +45,43 @@ jobs:
       - name: Build VitePress
         run: npm run docs:build
 
-      - name: Pack static website
+      - name: Validate static output
+        shell: bash
         run: |
-          cd docs/.vitepress/dist
-          zip -r ../../../lotus-site-dist.zip .
+          set -euo pipefail
 
-      - name: Upload static website
-        uses: actions/upload-artifact@v4
-        with:
-          name: lotus-site-dist
-          path: lotus-site-dist.zip
-          if-no-files-found: error
-          retention-days: 14
+          test -f docs/.vitepress/dist/index.html
+
+          if find docs/.vitepress/dist -type f -iname '*.php' | grep -q .; then
+            echo 'Unexpected PHP files were found in the static output.'
+            exit 1
+          fi
+
+      - name: Publish static files to deploy branch
+        shell: bash
+        env:
+          DEPLOY_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+
+          DIST="$GITHUB_WORKSPACE/docs/.vitepress/dist"
+          PUBLISH="$RUNNER_TEMP/lotus-site-deploy"
+
+          rm -rf "$PUBLISH"
+          mkdir -p "$PUBLISH"
+          cp -a "$DIST"/. "$PUBLISH"/
+          touch "$PUBLISH/.nojekyll"
+
+          cd "$PUBLISH"
+
+          git init --initial-branch=deploy
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add --all
+          git commit -m "Deploy ${GITHUB_SHA}"
+
+          git remote add origin \
+            "https://x-access-token:${DEPLOY_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+
+          git push --force origin deploy
