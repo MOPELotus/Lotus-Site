@@ -1,0 +1,55 @@
+name: Build Lotus Site
+
+on:
+  push:
+    branches:
+      - main
+  schedule:
+    - cron: '17 */6 * * *'
+  workflow_dispatch:
+  repository_dispatch:
+    types:
+      - source-docs-updated
+
+concurrency:
+  group: lotus-site-build
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout site
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Sync project documentation
+        run: npm run docs:sync
+
+      - name: Build VitePress
+        run: npm run docs:build
+
+      - name: Pack static website
+        run: |
+          cd docs/.vitepress/dist
+          zip -r ../../../lotus-site-dist.zip .
+
+      - name: Upload static website
+        uses: actions/upload-artifact@v4
+        with:
+          name: lotus-site-dist
+          path: lotus-site-dist.zip
+          if-no-files-found: error
+          retention-days: 14

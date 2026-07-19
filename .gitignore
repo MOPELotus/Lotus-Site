@@ -1,0 +1,14 @@
+node_modules/
+.sources/
+docs/.vitepress/cache/
+docs/.vitepress/dist/
+
+# 以下内容由 npm run docs:sync 从源仓库生成
+/docs/projects/*/README.source.md
+/docs/projects/*/README.md
+/docs/projects/*/docs/
+/docs/projects/*/LICENSE.md
+/docs/projects/*/NOTICE.md
+/docs/projects/*/THIRD_PARTY_NOTICES.md
+/docs/projects/*/.generated-files.json
+/docs/sync-status.md
