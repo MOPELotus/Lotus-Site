@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">Lotus</title>
+  <desc id="desc">A stylized lotus flower</desc>
+  <defs>
+    <linearGradient id="petal" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#a78bfa"/>
+      <stop offset="0.5" stop-color="#ec4899"/>
+      <stop offset="1" stop-color="#f59e0b"/>
+    </linearGradient>
+    <linearGradient id="petalSoft" x1="0" y1="1" x2="1" y2="0">
+      <stop offset="0" stop-color="#7c3aed"/>
+      <stop offset="1" stop-color="#f472b6"/>
+    </linearGradient>
+    <filter id="shadow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="18" stdDeviation="18" flood-color="#6d28d9" flood-opacity="0.22"/>
+    </filter>
+  </defs>
+  <g filter="url(#shadow)">
+    <path fill="url(#petalSoft)" d="M255 370C171 332 118 261 116 173c68 8 126 43 159 102 15 27 22 59 20 95-13 3-26 3-40 0Z"/>
+    <path fill="url(#petalSoft)" d="M257 370c84-38 137-109 139-197-68 8-126 43-159 102-15 27-22 59-20 95 13 3 26 3 40 0Z" opacity="0.92"/>
+    <path fill="url(#petal)" d="M256 376c-58-59-78-136-52-218 27 13 51 33 68 58 17-25 41-45 68-58 26 82 6 159-52 218-10 10-21 19-32 27-11-8-22-17-32-27Z"/>
+    <path fill="url(#petal)" d="M256 342c-46-57-55-127 0-224 55 97 46 167 0 224Z"/>
+    <path fill="#7c3aed" d="M91 319c49 2 94 19 132 52 11 10 22 21 31 33-68 11-126-9-174-60 0-9 4-18 11-25Z" opacity="0.88"/>
+    <path fill="#ec4899" d="M421 319c-49 2-94 19-132 52-11 10-22 21-31 33 68 11 126-9 174-60 0-9-4-18-11-25Z" opacity="0.88"/>
+    <path fill="#f59e0b" d="M151 405c69 26 141 26 210 0-16 31-53 50-105 50s-89-19-105-50Z" opacity="0.9"/>
+  </g>
+</svg>
